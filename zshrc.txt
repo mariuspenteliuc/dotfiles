@@ -1,0 +1,135 @@
+#custom terminal welcome & prompt
+greeting=("\rWelcome back! 👋                                                                                     " "\rGlad to see you again! 😄                                                                                     " "\rLong time, no see. 🙈                                                                                     " "\rAt your service! 💪                                                                                     " "\rLet's get hackin' 👨‍💻                                                                                  " "\rOooh yeah, it's on! 😎                                                                                     " "\rSummoned me? 🖐                                                                                     ")
+echo ${greeting[$(( $RANDOM % ${#greeting[@]} + 1 ))]}
+PROMPT='%(?:🔥:💩) '
+
+export LSCOLORS=Hxfxcxdxbxegedabagacad
+export CLICOLOR_FORCE=1
+export PATH="/usr/local/sbin:$PATH"
+
+# ---------
+#  ALIASES
+# ---------
+
+alias please='sudo $(fc -ln -1)'
+alias thanks='echo "→ No problem 👍"' 
+alias speedtest='speedtest --simple --secure; printf \\a'
+#alias ls="ls -FlGh | awk '{print \$5, \"\t\", \$9, \" \"}'"
+alias pingtest='ping 8.8.8.8'
+alias pping='pingtest'
+alias pingtestalert='ping 8.8.8.8 -a'
+alias ppinga='pingtestalert'
+
+
+### Functions ↓
+#custom greetings
+#GREETINGS = ("Welcome back!" "Heya!" "Hello" "Howdy, boy!" "Long time, no see")
+#EMOJIS = (🙌 🤘 👋 ✌️  😘 ❤️);
+
+# ---------
+# FUNCTIONS
+# ---------
+
+covid19() {
+    if [[ $# == 0 ]]; then
+	command curl https://corona-stats.online/
+    else
+	command curl https://corona-stats.online/$1
+    fi
+}
+dont() {
+        if [[ $@ == "sleep" ]]; then
+                command caffeinate -d
+        else
+                command echo "don't what? sleep? ð¤·<200d>âï "
+        fi
+}
+hello() {
+    echo "Hi! 👋"
+}
+hey() {
+    echo "Hello! 👋"
+}
+hi() {
+    echo "Hey! 👋"
+}
+hide() {
+    if [[ $@ == "hidden" ]]; then
+        command defaults write com.apple.finder AppleShowAllFiles FALSE; killall Finder
+    else
+        command echo "maybe use 'hide hidden'?"
+    fi
+}
+ls() {
+	# directory size does not include contents, only the directory itself
+	# try something like 'du -h *' to list directory + contents size
+        command ls -FlGh $@ | awk '{print $5, "\t", $9, " "}'
+}
+make() {
+        if [[ $@ == "server" ]]; then
+                command echo "running webserver on localhost:8000"
+                command php -S localhost:8000
+        else
+                command $@
+        fi
+}
+play() {
+        if [[ $@ == "starwars" ]]; then
+                command nc towel.blinkenlights.nl 23
+        else
+                command echo "try 'play starwars' 😉"
+        fi
+}
+ring() {
+    if [[ $@ == "bell" ]]; then
+            command afplay /System/Library/Sounds/Glass.aiff
+    else
+            echo "Ring what? A bell?"
+    fi
+}
+screensaver() {
+	command caffeinate -d open -a ScreenSaverEngine
+}
+show() {
+	if [[ $@ == "hidden" ]]; then
+        	command defaults write com.apple.finder AppleShowAllFiles TRUE; killall Finder
+	else
+        	command echo "maybe use 'show hidden'?"
+	fi
+}
+spinner() {
+	spin="⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
+	let "condition = -1"
+	let "zero = 0"
+	if [[ $1 > -1 ]]; then
+			let "condition = $1 * 2"
+	fi
+	while (( 0 != $condition )) {
+		for (( i=0; i<${#spin}; i++ )); do
+			printf "\r${spin:$i:1} "; sleep 0.05;
+		done
+		printf "\r "
+		((condition=condition-1))
+	}
+	printf "\r"
+}
+timer() {
+    # TODO:	move forking and killing commands to spinner function
+    #	    also replace "pid=$( sleep $time" with "pid=$( spinner $time"
+
+	let time=$1;
+	if [[ $2 == s* ]]; then
+		echo "timer for $time seconds"
+	fi
+	if [[ $2 == m* ]]; then
+		echo "timer for $time minutes"
+		time=time*60;
+	fi
+
+	{ pid=$( sleep $time >&3 & echo $! ); } 3>&1
+	
+	while kill -0 "$pid" 2> /dev/null; do
+		spinner $time;			
+        done 
+        printf '\r'; printf \\a;
+}
