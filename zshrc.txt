@@ -19,7 +19,7 @@ alias pingtest='ping 8.8.8.8'
 alias pping='pingtest'
 alias pingtestalert='ping 8.8.8.8 -a'
 alias ppinga='pingtestalert'
-
+alias notify='ring bell'
 
 ### Functions ↓
 #custom greetings
