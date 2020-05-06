@@ -19,7 +19,9 @@ alias pingtest='ping 8.8.8.8'
 alias pping='pingtest'
 alias pingtestalert='ping 8.8.8.8 -a'
 alias ppinga='pingtestalert'
+alias push='git push; ring bell'
 alias notify='ring bell'
+alias status='git status'
 
 ### Functions ↓
 #custom greetings
@@ -30,6 +32,10 @@ alias notify='ring bell'
 # FUNCTIONS
 # ---------
 
+commit() {
+        command git add .
+        command git commit -m $@
+}
 covid19() {
     if [[ $# == 0 ]]; then
 	command curl https://corona-stats.online/
